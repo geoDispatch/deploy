@@ -1,0 +1,6 @@
+name: geodispatch
+
+include:
+  - agent/docker-compose.yml
+  - supervisor/docker-compose.yml
+  - dashboard/docker-compose.yml
