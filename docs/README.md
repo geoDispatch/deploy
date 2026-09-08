@@ -19,11 +19,14 @@ geoDispatch/deploy
 ├── agent/        (git submodule)
 ├── dashboard/    (git submodule)
 ├── supervisor/   (git submodule)
+├── .env.example
+├── .gitignore
+├── .gitmodules
 ├── docker-compose.yml
 ├── docs/
 │   ├── README.md
 │   ├── SETUP.md
-│   └── LICENSE
+│   └── LICENSE.md
 └── Makefile
 ```
 
