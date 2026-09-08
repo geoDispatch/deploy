@@ -34,4 +34,3 @@ This repository uses Git submodules for core components:
 - `agent` → AI decision service
 - `supervisor` → orchestration/backend service
 - `dashboard` → frontend interface
-```
