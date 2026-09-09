@@ -12,6 +12,7 @@ update-submodules:
 
 prepare:
 	@if [ ! -f .env ]; then cp .env.example .env; echo ".env created from .env.example"; fi
+	@if [ ! -f supervisor/.env ] && [ -f supervisor/.env.example ]; then cp supervisor/.env.example supervisor/.env; echo "supervisor/.env created from supervisor/.env.example"; fi
 
 build: prepare
 	docker compose build

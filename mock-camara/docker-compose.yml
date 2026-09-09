@@ -10,8 +10,6 @@ services:
       CAMARA_API_KEY: "${CAMARA_API_KEY:-mock-secret-key-12345}"
       MOCK_FAILURE_RATE: "${MOCK_FAILURE_RATE:-0}"
       MOCK_LATENCY_MS: "${MOCK_LATENCY_MS:-0}"
-    networks:
-      - geodispatch-net
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/health')"]
       interval: 10s

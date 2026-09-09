@@ -1,11 +1,11 @@
 name: geodispatch
 
 networks:
-  geodispatch-net:
-    driver: bridge
+  default:
+    name: geodispatch-net
 
 include:
   - agent/docker-compose.yml
   - supervisor/docker-compose.yml
-  - dashboard/docker-compose.yml
+  # - dashboard/docker-compose.yml
   - mock-camara/docker-compose.yml
