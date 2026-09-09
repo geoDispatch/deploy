@@ -7,3 +7,6 @@
 [submodule "supervisor"]
 	path = supervisor
 	url = https://github.com/geoDispatch/supervisor.git
+[submodule "contracts"]
+	path = contracts
+	url = https://github.com/geoDispatch/contracts.git

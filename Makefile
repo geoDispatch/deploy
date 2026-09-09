@@ -11,7 +11,7 @@ update-submodules:
 	git submodule foreach git pull origin main
 
 prepare:
-	@if [ ! -f .env ]; then cp  .env  fi
+	@if [ ! -f .env ]; then cp .env.example .env; echo ".env created from .env.example"; fi
 
 build: prepare
 	docker compose build
