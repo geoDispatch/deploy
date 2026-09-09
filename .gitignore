@@ -1,0 +1,14 @@
+# Environment files (never commit secrets)
+.env
+
+# Dependencies & Build artifacts
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+*.pyo
+
+# System files
+.DS_Store
+Thumbs.db
