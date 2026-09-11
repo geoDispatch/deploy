@@ -40,10 +40,21 @@ services:
       retries: 5
       start_period: 3s
 
+  postgres:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U geodispatch -d geodispatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
   supervisor:
     depends_on:
       mock_camara:
         condition: service_healthy
+    healthcheck:
+      start_period: 30s
+      retries: 10
     environment:
       # An empty API key selects the local fallback. Supplying an official
       # sandbox key and endpoint in the untracked root .env selects CAMARA.
