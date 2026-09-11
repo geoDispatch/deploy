@@ -6,6 +6,53 @@ networks:
 
 include:
   - agent/docker-compose.yml
-  - supervisor/docker-compose.dev.yml
-  # - dashboard/docker-compose.yml
-  # - mock-camara/docker-compose.yml
+  - supervisor/docker-compose.yml
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/dashboard.Dockerfile
+      args:
+        VITE_WS_URL: ${DASHBOARD_WS_URL:-ws://localhost:3000/ws}
+    container_name: geodispatch_dashboard
+    restart: unless-stopped
+    depends_on:
+      supervisor:
+        condition: service_healthy
+    ports:
+      - "${DASHBOARD_PORT:-3000}:80"
+
+  # Local CAMARA fallback for development and demo reliability. This reuses
+  # the supervisor-owned mock; it does not duplicate its implementation.
+  mock_camara:
+    build:
+      context: ./supervisor
+      dockerfile: scripts/camara/Dockerfile
+    container_name: geodispatch_mock_camara
+    restart: unless-stopped
+    ports:
+      - "${MOCK_CAMARA_PORT:-8081}:8081"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/qos || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+
+  supervisor:
+    depends_on:
+      mock_camara:
+        condition: service_healthy
+    environment:
+      # An empty API key selects the local fallback. Supplying an official
+      # sandbox key and endpoint in the untracked root .env selects CAMARA.
+      MOCK_NOKIA_NAC_BASE_URL: ${MOCK_NOKIA_NAC_BASE_URL:-http://mock_camara:8081}
+      NOKIA_NAC_BASE_URL: ${NOKIA_NAC_BASE_URL:-https://network-as-code.nokia.rapidapi.com}
+      NOKIA_NAC_API_KEY: ${NOKIA_NAC_API_KEY:-}
+      NOKIA_NAC_HOST: ${NOKIA_NAC_HOST:-network-as-code.nokia.rapidapi.com}
+      NOKIA_NAC_TOKEN: ${NOKIA_NAC_TOKEN:-}
+      # These integration connections must not inherit supervisor/.env's
+      # standalone-development defaults (mock_agent and its local database).
+      AGENT_URL: ${INTEGRATION_AGENT_URL:-http://app:8000/decide}
+      DATABASE_URL: ${INTEGRATION_DATABASE_URL:-postgres://geodispatch:geodispatch@postgres:5432/geodispatch?sslmode=disable}

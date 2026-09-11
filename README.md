@@ -8,10 +8,9 @@ Welcome to the **GeoDispatch** deployment repository! This repository orchestrat
 
 This repository uses a **Hybrid Git Submodule + Docker Compose Composition** pattern:
 
-### 1. Hybrid Submodule + Compose Structure
+### 1. Submodule + Compose Structure
 - **Submodule Management**: Source code for `supervisor`, `agent`, `dashboard`, and `contracts` are tracked as Git submodules (configured in `.gitmodules`).
-- **Native Service**: `mock-camara` lives natively inside `deploy/` as a dedicated mock service.
-- **Root Compose (`docker-compose.yml`)**: Uses Docker Compose `include:` to stitch together individual service compose files (`agent/docker-compose.yml`, `supervisor/docker-compose.yml`, `dashboard/docker-compose.yml`, `mock-camara/docker-compose.yml`).
+- **Root Compose (`docker-compose.yml`)**: Uses Docker Compose `include:` to stitch together individual service compose files (`agent/docker-compose.yml`, `supervisor/docker-compose.yml`, `dashboard/docker-compose.yml`).
 - **Shared Bridge Network**: All services join the `geodispatch-net` bridge network for inter-service communication.
 
 ### 2. Stack Components
@@ -19,7 +18,6 @@ This repository uses a **Hybrid Git Submodule + Docker Compose Composition** pat
 - `agent/`: **Python Agent service** (AI decision/logic engine).
 - `dashboard/`: **SolidJS + Leaflet Dashboard** (Vite-based frontend displaying real-time vehicle and camera dispatch tracking).
 - `contracts/`: **Shared Schemas & Examples** (JSON payloads and contract definitions).
-- `mock-camara/`: **Mock CAMARA API** (simulates Nokia NaC / CAMARA network APIs for local dev and testing).
 
 ### 3. Environment & Security Standard (`.env.example`)
 - `.env.example` serves as the master template.
@@ -49,9 +47,6 @@ deploy/
 │   ├── Dockerfile
 │   └── docker-compose.yml
 ├── contracts/                  <- Git Submodule: Shared Schemas & Examples
-└── mock-camara/                <- Native Service: Mock CAMARA API
-    ├── Dockerfile
-    └── docker-compose.yml
 ```
 
 ---
@@ -103,7 +98,7 @@ make prepare
 
 ### 3. Build & Run Services
 
-Start all 4 services in the background:
+Start the services in the background:
 
 ```bash
 make up
@@ -139,16 +134,13 @@ The following table details the environment variables, service endpoints, and po
 | `SUPERVISOR_PORT` | Host mapping | `go-supervisor` HTTP port | `8080` |
 | `SUPERVISOR_HOST` | Internal network | Service hostname | `go-supervisor` |
 | `AGENT_URL` | `go-supervisor` | Target URL for Python Agent `/decide` | `http://python-agent:8000` |
-| `CAMARA_URL` | `go-supervisor` | Target URL for mock or real Nokia NaC API | `http://mock-camara:8090` |
-| `CAMARA_API_KEY` | `go-supervisor`, `mock-camara` | Shared secret API credential | `mock-secret-key-12345` |
+| `CAMARA_URL` | `go-supervisor` | Target URL for CAMARA / Nokia NaC API (Ilias's mock in supervisor) | `http://mock_camara:8081` |
 | `AGENT_PORT` | Host mapping | `python-agent` HTTP port | `8000` |
 | `DASHBOARD_PORT` | Host mapping | `dashboard` HTTP port | `3000` |
 | `SUPERVISOR_WS_URL` | `dashboard` | Client WebSocket connection URL | `ws://localhost:8080/ws` |
-| `MOCK_CAMARA_PORT` | Host mapping | `mock-camara` HTTP port | `8090` |
 
 > [!NOTE]
 > - `python-agent` responds to requests sent by `go-supervisor` via `AGENT_URL`; it makes no outbound service calls.
-> - Port `8090` is assigned to `mock-camara` to prevent collisions with `supervisor` (`8080`), `agent` (`8000`), and `dashboard` (`3000`).
 
 ---
 

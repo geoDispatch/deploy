@@ -17,7 +17,7 @@ flowchart TD
     end
 
     subgraph Network ["3. Telco Intelligence"]
-        G <-->|HTTP :8090| MC[Mock CAMARA / Nokia NaC]
+        G <-->|HTTP :8081| MC[Mock CAMARA / Nokia NaC]
     end
 
     subgraph AI ["4. Decision Engine"]
@@ -69,7 +69,7 @@ docker network inspect geodispatch-net --format '{{range .Containers}}{{.Name}} 
 # 1.3 Verify service health endpoints
 curl -fsS http://localhost:8080/health && echo " -> Supervisor OK"
 curl -fsS http://localhost:8000/health && echo " -> Agent OK"
-curl -fsS http://localhost:8090/health && echo " -> Mock CAMARA OK"
+curl -fsS http://localhost:8081/qos && echo " -> Mock CAMARA OK"
 
 # 1.4 Verify Ollama has required models loaded
 docker exec -it geodispatch-ollama ollama list
@@ -110,22 +110,17 @@ LIMIT 5;
 
 ### Phase 3: Component Isolation Tests
 
-#### 3.1 Mock CAMARA Verification
-Test that `mock-camara` properly handles location, reachability, and congestion:
+#### 3.1 Mock CAMARA Verification (Supervisor Mock on :8081)
+Test that mock CAMARA handles location, reachability, and QoS:
 ```bash
 # Location Retrieval
-curl -s -X POST http://localhost:8090/location-retrieval \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer mock-secret-key-12345" \
-  -d '{"device": {"phoneNumber": "+212600000001"}, "maxAge": 600}' | jq .
+curl -s "http://localhost:8081/location?phone=+212600000001" | jq .
 
 # Reachability Status
-curl -s http://localhost:8090/reachability/+212600000001 \
-  -H "Authorization: Bearer mock-secret-key-12345" | jq .
+curl -s "http://localhost:8081/reachability?phone=+212600000001" | jq .
 
-# Congestion Insights
-curl -s "http://localhost:8090/congestion-insights?lat=33.5731&lon=-7.5898" \
-  -H "Authorization: Bearer mock-secret-key-12345" | jq .
+# QoS Status
+curl -s http://localhost:8081/qos | jq .
 ```
 
 #### 3.2 AI Agent Batch Decision (`POST /decide`)
