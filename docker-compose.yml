@@ -6,6 +6,6 @@ networks:
 
 include:
   - agent/docker-compose.yml
-  - supervisor/docker-compose.yml
+  - supervisor/docker-compose.dev.yml
   # - dashboard/docker-compose.yml
-  - mock-camara/docker-compose.yml
+  # - mock-camara/docker-compose.yml
