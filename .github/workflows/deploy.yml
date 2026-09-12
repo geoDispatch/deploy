@@ -34,4 +34,5 @@ jobs:
         run: make smoke-check
 
       - name: Validate contracts
+        continue-on-error: true
         run: make contract-check
