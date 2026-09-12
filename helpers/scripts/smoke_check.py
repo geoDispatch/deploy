@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import subprocess
 import sys
 import urllib.error
@@ -14,7 +15,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def ensure_env() -> None:
+    env_file = ROOT / ".env"
+    example_env = ROOT / ".env.example"
+    if not env_file.is_file() and example_env.is_file():
+        shutil.copyfile(example_env, env_file)
+
+    supervisor_env = ROOT / "supervisor" / ".env"
+    supervisor_example = ROOT / "supervisor" / ".env.example"
+    if not supervisor_env.is_file() and supervisor_example.is_file():
+        shutil.copyfile(supervisor_example, supervisor_env)
+
+
 def run_config() -> None:
+    ensure_env()
     result = subprocess.run(
         ["docker", "compose", "config", "--quiet"],
         cwd=ROOT,

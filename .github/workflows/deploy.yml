@@ -27,6 +27,9 @@ jobs:
         with:
           version: latest
 
+      - name: Prepare environment configuration
+        run: make prepare
+
       - name: Validate Compose and static smoke checks
         run: make smoke-check
 

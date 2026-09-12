@@ -35,13 +35,13 @@ status:
 contract-check:
 	python3 helpers/scripts/validate_contracts.py
 
-smoke-check:
+smoke-check: prepare
 	python3 helpers/scripts/smoke_check.py
 
-check:
+check: prepare
 	python3 helpers/scripts/check.py
 
-test:
+test: prepare
 	python3 helpers/scripts/check.py --test
 
 clean:
