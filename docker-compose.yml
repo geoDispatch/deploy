@@ -6,7 +6,7 @@ networks:
 
 include:
   - agent/docker-compose.yml
-  - supervisor/docker-compose.yml
+  - supervisor/docker-compose.dev.yml
 
 services:
   dashboard:
@@ -39,31 +39,3 @@ services:
       timeout: 3s
       retries: 5
       start_period: 3s
-
-  postgres:
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U geodispatch -d geodispatch"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 30s
-
-  supervisor:
-    depends_on:
-      mock_camara:
-        condition: service_healthy
-    healthcheck:
-      start_period: 30s
-      retries: 10
-    environment:
-      # An empty API key selects the local fallback. Supplying an official
-      # sandbox key and endpoint in the untracked root .env selects CAMARA.
-      MOCK_NOKIA_NAC_BASE_URL: ${MOCK_NOKIA_NAC_BASE_URL:-http://mock_camara:8081}
-      NOKIA_NAC_BASE_URL: ${NOKIA_NAC_BASE_URL:-https://network-as-code.nokia.rapidapi.com}
-      NOKIA_NAC_API_KEY: ${NOKIA_NAC_API_KEY:-}
-      NOKIA_NAC_HOST: ${NOKIA_NAC_HOST:-network-as-code.nokia.rapidapi.com}
-      NOKIA_NAC_TOKEN: ${NOKIA_NAC_TOKEN:-}
-      # These integration connections must not inherit supervisor/.env's
-      # standalone-development defaults (mock_agent and its local database).
-      AGENT_URL: ${INTEGRATION_AGENT_URL:-http://app:8000/decide}
-      DATABASE_URL: ${INTEGRATION_DATABASE_URL:-postgres://geodispatch:geodispatch@postgres:5432/geodispatch?sslmode=disable}
